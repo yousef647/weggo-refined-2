@@ -10,12 +10,10 @@ export default function BecomeSellerPage() {
   const router = useRouter();
   const { update } = useSession();
   const [err, setErr] = useState<string | null>(null);
-  const [ok, setOk] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
   async function become() {
     setErr(null);
-    setOk(null);
     setBusy(true);
     try {
       const res = await fetch("/api/user/become-seller", {
@@ -27,12 +25,13 @@ export default function BecomeSellerPage() {
         setErr(data.error ?? "Could not update account");
         return;
       }
+      // Trigger session update in NextAuth
       await update();
-      setOk("Selling enabled. Taking you to create a listing…");
-      router.refresh();
-      router.push("/sell/new");
-    } catch {
-      setErr("Network error. Try again.");
+      // Navigate to the create listing page after a longer delay
+      // This gives time for the session to be fully updated in all cookies
+      setTimeout(() => router.push("/sell/new"), 300);
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Network error. Try again.");
     } finally {
       setBusy(false);
     }
@@ -49,7 +48,6 @@ export default function BecomeSellerPage() {
           buy items as a seller.
         </p>
         {err && <p className="rounded-md bg-destructive/10 px-3 py-2 text-destructive">{err}</p>}
-        {ok && <p className="rounded-md bg-emerald-500/10 px-3 py-2 text-emerald-800">{ok}</p>}
         <Button type="button" onClick={become} disabled={busy} className="w-full sm:w-auto">
           {busy ? "Updating…" : "Enable selling on my account"}
         </Button>
