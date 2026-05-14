@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import { SignOutButton } from "@/components/sign-out-button";
+import { ProfileDropdown } from "@/components/profile-dropdown";
+import { UnreadMessagesBadge } from "@/components/unread-messages-badge";
 import { Store } from "lucide-react";
 
 export function SiteNav() {
@@ -35,9 +36,12 @@ export function SiteNav() {
               </Link>
               <Link
                 href="/messages"
-                className="rounded-full px-3 py-1.5 text-sm font-medium text-muted-foreground transition hover:bg-muted hover:text-foreground"
+                className="relative rounded-full px-3 py-1.5 text-sm font-medium text-muted-foreground transition hover:bg-muted hover:text-foreground"
               >
                 Messages
+                <span className="absolute -right-1 -top-1">
+                  <UnreadMessagesBadge />
+                </span>
               </Link>
               {(user.role === "seller" || user.role === "admin") && (
                 <Link
@@ -68,10 +72,7 @@ export function SiteNav() {
         </nav>
         <div className="flex items-center gap-2">
           {status === "authenticated" && user ? (
-            <>
-              <span className="hidden max-w-[200px] truncate text-xs text-muted-foreground sm:inline">{user.email}</span>
-              <SignOutButton />
-            </>
+            <ProfileDropdown userName={user.name || "User"} email={user.email || ""} />
           ) : status === "loading" ? (
             <span className="text-xs text-muted-foreground">…</span>
           ) : (

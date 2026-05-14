@@ -35,6 +35,19 @@ export default function MessageThreadPage() {
 
   useEffect(() => {
     void load();
+    
+    // Mark all messages as read when conversation is opened
+    async function markAsRead() {
+      try {
+        await fetch(`/api/conversations/${id}/messages`, {
+          method: "PATCH",
+        });
+      } catch (err) {
+        console.error("Failed to mark messages as read:", err);
+      }
+    }
+    void markAsRead();
+    
     const t = setInterval(() => {
       void load();
     }, 4000);

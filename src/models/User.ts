@@ -15,6 +15,22 @@ const UserSchema = new Schema(
     },
     banned: { type: Boolean, default: false },
     bannedReason: { type: String, default: null },
+    profilePicture: { type: String, default: null },
+    bio: { type: String, default: "", trim: true, maxlength: 500 },
+    location: { type: String, default: "", trim: true },
+    followers: {
+      type: [{ type: Schema.Types.ObjectId, ref: "User" }],
+      default: [],
+      index: true,
+    },
+    ratings: [
+      {
+        rater: { type: Schema.Types.ObjectId, ref: "User", required: true },
+        score: { type: Number, required: true, min: 1, max: 5 },
+        comment: { type: String, default: "", trim: true, maxlength: 500 },
+        createdAt: { type: Date, default: Date.now },
+      },
+    ],
   },
   { timestamps: true }
 );
@@ -22,6 +38,7 @@ const UserSchema = new Schema(
 UserSchema.index({ role: 1, banned: 1 });
 
 export type UserDocument = InferSchemaType<typeof UserSchema> & { _id: mongoose.Types.ObjectId };
+
 
 const User: Model<UserDocument> =
   mongoose.models.User ?? mongoose.model<UserDocument>("User", UserSchema);

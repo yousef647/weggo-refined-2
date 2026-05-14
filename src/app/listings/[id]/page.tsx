@@ -97,7 +97,15 @@ export default async function ListingDetailPage({ params }: { params: Promise<{ 
           </div>
           <div className="rounded-lg border border-border bg-card p-4 text-sm">
             <p className="font-medium">Seller</p>
-            <p className="text-muted-foreground">{sellerName}</p>
+            <Link
+              href={`/seller/${sellerId}`}
+              className="text-primary hover:underline"
+            >
+              {sellerName}
+            </Link>
+            <p className="mt-2 text-xs text-muted-foreground hover:text-foreground">
+              Click to view profile & rate seller →
+            </p>
           </div>
           <ListingActions
             listingId={id}

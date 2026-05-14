@@ -53,6 +53,32 @@ export async function GET(req: Request, { params }: Params) {
   }
 }
 
+export async function PATCH(req: Request, { params }: Params) {
+  try {
+    const me = await requireAuth();
+    const { id } = await params;
+    await assertParticipant(id, me.id);
+    const uid = new Types.ObjectId(me.id);
+    
+    // Mark all unread messages as read (messages where user is NOT the sender)
+    await Message.updateMany(
+      {
+        conversation: id,
+        sender: { $ne: uid },
+        readAt: null,
+      },
+      {
+        readAt: new Date(),
+      }
+    );
+    
+    return jsonOk({ success: true });
+  } catch (e) {
+    const err = e as Error & { status?: number };
+    return jsonError(err.message, err.status ?? 500);
+  }
+}
+
 export async function POST(req: Request, { params }: Params) {
   try {
     const me = await requireAuth();
